@@ -321,8 +321,11 @@ namespace NuGetGallery
                     string.Format(CultureInfo.CurrentCulture, Strings.AddOwner_OwnerNotConfirmed, username));
                 return false;
             }
-            var isOwner = !PermissionsService.IsActionAllowed(package, user, PackagePermissionRestrictedActions.AcceptOwnership) ||
+
+            var isOwner = 
+                package.Owners.Any(o => o.MatchesUser(user)) ||
                 _packageOwnershipManagementService.GetPackageOwnershipRequests(package: package, newOwner: user).Any();
+
             if (add && isOwner)
             {
                 model = new ManagePackageOwnerModel(
